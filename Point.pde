@@ -5,10 +5,6 @@ class Point {
   public float rawY = 0;
   public Alignment alignment = Alignment.LEFT;
   
-  public Point(float x, float y) {
-     this(x, y, Alignment.LEFT);
-  }
-  
   public Point(float x, float y, Alignment alignment) {
     this.x = adjustX(x, alignment);
     this.y = adjustY(y, alignment);
@@ -76,7 +72,7 @@ class Point {
   @param theta: expected to be in radians
   */
   Point translate(Vector direction) {
-    return new Point(this.rawX + direction.x, this.rawY + direction.y);
+    return new Point(this.rawX + direction.x, this.rawY + direction.y, this.alignment);
   }
    
   /**
@@ -89,7 +85,7 @@ class Point {
   */
   Point rotatePoint(Vector ray, float theta, float distance) {
     Vector transform = ray.rotate(theta).scale(distance);
-    return new Point(this.rawX + transform.x, this.rawY+ transform.y);
+    return new Point(this.rawX + transform.x, this.rawY+ transform.y, this.alignment);
   }
   /**
   known: angle from initial vector, total distance from vector
@@ -120,7 +116,7 @@ class Point {
   */
   Point getPointOnLine(Vector ray, float theta) {
     float distance = ray.getMagnitude();
-    return new Point(this.rawX + distance * tan(theta), this.rawY + ray.y);
+    return new Point(this.rawX + distance * tan(theta), this.rawY + ray.y, this.alignment);
   }
 }
 

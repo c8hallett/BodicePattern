@@ -75,7 +75,7 @@ void adjustedNeckArc() {
   
   float neckWidth = abs(centerNeck.x - collar.x) * 2;
   float neckHeight = abs(centerNeck.y - collar.y) * 2;
-  Point center = new Point(min(centerNeck.rawX, collar.rawY), min(centerNeck.rawY, collar.rawY));
+  Point center = new Point(min(centerNeck.rawX, collar.rawY), min(centerNeck.rawY, collar.rawY), collar.alignment);
   
   if(collar.x < centerNeck.x) {
     arc(center.x, center.y, neckWidth, neckHeight, HALF_PI, PI, OPEN);

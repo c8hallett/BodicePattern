@@ -39,23 +39,23 @@ void drawFinalLines() {
 }
 
 void calculateMainLandmarks() {
-  landmarks.put(Landmark.CENTER_NECKLINE, new Point(0, fullFront - centerFront));
-  landmarks.put(Landmark.BUST_APEX, new Point(bustSpan, shoulderToBust));
-  landmarks.put(Landmark.CENTER_WAIST, new Point(0,  fullFront));
+  newLeftPoint(Landmark.CENTER_NECKLINE, 0, fullFront - centerFront);
+  newLeftPoint(Landmark.BUST_APEX, bustSpan, shoulderToBust);
+  newLeftPoint(Landmark.CENTER_WAIST, 0,  fullFront);
 }
 
 void calculateShoulder() {
   float shoulderDepth = fullFront - getMissingLegOfTriangle(crossFront, shoulderToShoulder);
   float neckWidth = shoulderToShoulder - getMissingLegOfTriangle(shoulderLength, shoulderDepth);
   
-  landmarks.put(Landmark.SHOULDER, new Point(shoulderToShoulder, shoulderDepth));
-  landmarks.put(Landmark.COLLAR, new Point(neckWidth, 0));
-  landmarks.put(Landmark.CHEST_ANCHOR, new Point(acrossChest, shoulderToArmpit));
+  newLeftPoint(Landmark.SHOULDER, shoulderToShoulder, shoulderDepth);
+  newLeftPoint(Landmark.COLLAR, neckWidth, 0);
+  newLeftPoint(Landmark.CHEST_ANCHOR, acrossChest, shoulderToArmpit);
 }
 
 
 void calculateDart() {
-  Point dartTip = new Point(bustSpan, shoulderToBust + 1 * unit);
+  Point dartTip = new Point(bustSpan, shoulderToBust + 1 * unit, Alignment.LEFT);
   Point dartStart = dartTip.getPointOnLine(new Vector(0, fullFront - dartTip.rawY), radians(-15));
   
   float dartLegLength = dartStart.getDistanceBetween(dartTip);
@@ -110,6 +110,7 @@ void calculateMainBackLandmarks() {
 void newLeftPoint(Landmark landmark, float x, float y) {
   landmarks.put(landmark, new Point(x, y, Alignment.LEFT));
 }
+
 
 void newRightPoint(Landmark landmark, float x, float y) {
   landmarks.put(landmark, new Point(x, y, Alignment.RIGHT));
