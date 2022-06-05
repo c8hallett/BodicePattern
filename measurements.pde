@@ -7,7 +7,7 @@ float frontBust = 20 * unit / 2;
 float shoulderToBust = 12 * unit;
 float underBust = 17 * unit / 2;
 float shoulderToUnderBust = 14 * unit;
-float shoulderToArmpit = 6 * unit + 2 * unit;
+float shoulderToArmpit = 7 * unit;
 // this is armscye to armscye
 float acrossChest = 12 * unit / 2;
 float bustSpan = 8 * unit / 2;

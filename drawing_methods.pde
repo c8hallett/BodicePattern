@@ -41,7 +41,6 @@ void drawLandmarks() {
     point(p.x, p.y);      
    
     text(landmark.getKey().name(), p.x + (0.1 * unit), p.y);
-    println(landmark.getKey().name() + " = " + p);
   }
 }
 
@@ -82,6 +81,16 @@ void adjustedNeckArc() {
   } else { 
     arc(center.x, center.y, neckWidth, neckHeight, 0, HALF_PI, OPEN);
   }
+}
+
+void curve(Landmark start, Landmark middle, Landmark end) {
+  Point p1 = valueOf(start);
+  Point c1 = valueOf(middle);
+  Point p2 = valueOf(end);
+  beginShape();
+  vertex(p1.x, p1.y);
+  quadraticVertex(c1.x - unit, c1.y, p2.x, p2.y);
+  endShape();
 }
 
 void curve(float intensity, Landmark... landmarks ) {

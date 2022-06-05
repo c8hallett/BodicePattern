@@ -14,17 +14,13 @@ void draw() {
 
 void calculateLandmarks() {
   landmarks.clear();
-  calculateMainLandmarks();
-  calculateShoulder();
-  calculateDart();
-  calculateRemainingWaist();
-  calculateAnchorsForShoulderCurve();
+  calculateFrontLandmarks();
+  insertFrontDart();
   calculateMainBackLandmarks();
 }
 
 void drawFinalLines() {
   setPatternStroke();
-  adjustedNeckArc();
   line(Landmark.COLLAR, Landmark.SHOULDER);
   line(Landmark.ARMPIT, Landmark.OUTER_WAIST);
   line(Landmark.OUTER_WAIST, Landmark.DART_END);
@@ -33,70 +29,60 @@ void drawFinalLines() {
   line(Landmark.DART_START, Landmark.DART_TIP);
   line(Landmark.DART_END, Landmark.DART_TIP);
   
+  adjustedNeckArc();
   point(Landmark.BUST_APEX);
   circle(Landmark.BUST_APEX, unit / 8);
-  curve(0.0, Landmark.SHOULDER_ANCHOR, Landmark.SHOULDER, Landmark.CHEST_ANCHOR, Landmark.ARMPIT, Landmark.ARMPIT_ANCHOR);
+  curve(Landmark.SHOULDER, Landmark.CHEST_ANCHOR, Landmark.ARMPIT);
+  
 }
 
-void calculateMainLandmarks() {
+void calculateFrontLandmarks() {
+  float boobBuffer = 1 * unit;
+  float dartOffset = radians(-10);
+  float shoulderDepth = fullFront - getMissingLegOfTriangle(crossFront, shoulderToShoulder);
+  
+  Point outerWaist = new Point(frontWaist, fullFront, Alignment.LEFT);
   newLeftPoint(Landmark.CENTER_NECKLINE, 0, fullFront - centerFront);
   newLeftPoint(Landmark.BUST_APEX, bustSpan, shoulderToBust);
-  newLeftPoint(Landmark.CENTER_WAIST, 0,  fullFront);
-}
-
-void calculateShoulder() {
-  float shoulderDepth = fullFront - getMissingLegOfTriangle(crossFront, shoulderToShoulder);
-  float neckWidth = shoulderToShoulder - getMissingLegOfTriangle(shoulderLength, shoulderDepth);
+  newLeftPoint(Landmark.COLLAR, shoulderToShoulder - getMissingLegOfTriangle(shoulderLength, shoulderDepth), 0);
+  newLeftPoint(Landmark.CENTER_WAIST, 0, fullFront);
+  landmarks.put(Landmark.OUTER_WAIST, outerWaist);
   
-  newLeftPoint(Landmark.SHOULDER, shoulderToShoulder, shoulderDepth);
-  newLeftPoint(Landmark.COLLAR, neckWidth, 0);
-  newLeftPoint(Landmark.CHEST_ANCHOR, acrossChest, shoulderToArmpit);
-}
-
-
-void calculateDart() {
-  Point dartTip = new Point(bustSpan, shoulderToBust + 1 * unit, Alignment.LEFT);
-  Point dartStart = dartTip.getPointOnLine(new Vector(0, fullFront - dartTip.rawY), radians(-15));
+  // shoulder & chest anchors
+  Point shoulder = new Point(shoulderToShoulder, shoulderDepth, Alignment.LEFT);
+  Point chestAnchor = new Point(acrossChest, shoulderToArmpit, Alignment.LEFT);
+  landmarks.put(Landmark.SHOULDER, shoulder);
+  landmarks.put(Landmark.CHEST_ANCHOR, chestAnchor);
   
-  float dartLegLength = dartStart.getDistanceBetween(dartTip);
-  float dartAngle = -getAngleOfArcLength(dartLegLength, frontBust - frontWaist);
-  
-  Point dartEnd = dartTip.rotatePoint(dartTip.to(dartStart), dartAngle, dartLegLength);
+  // dart landmarks
+  Point dartTip = new Point(bustSpan, shoulderToBust + boobBuffer, Alignment.LEFT);
+  Point dartStart = dartTip.getPointOnLine(new Vector(0, fullFront - dartTip.rawY), dartOffset);
+  Point dartEnd = dartStart;
   
   landmarks.put(Landmark.DART_TIP, dartTip);
   landmarks.put(Landmark.DART_START, dartStart);
   landmarks.put(Landmark.DART_END, dartEnd);
+  
+  // armpit & armpit anchors
+  float armpitAngle = HALF_PI + getAngleOfRise(frontBust-frontWaist, fullFront-shoulderToArmpit);
+  landmarks.put(Landmark.ARMPIT, outerWaist.rotatePoint(dartEnd, armpitAngle, sideLength));
 }
 
-void calculateRemainingWaist() {
-  Point dartTip = valueOf(Landmark.DART_TIP);
-  Point dartStart = valueOf(Landmark.DART_START);
-  Point dartEnd = valueOf(Landmark.DART_END);
-  Point centerWaist = valueOf(Landmark.CENTER_WAIST);
+void insertFrontDart() {
+  Point bustPoint = valueOf(Landmark.BUST_APEX);
+  float dartAngle = -getAngleOfArcLength(fullFront - bustPoint.rawY, frontBust - frontWaist);
   
-  Point outerWaist = dartEnd.rotatePoint(dartTip, dartStart.getAngleBetween(centerWaist, dartTip), frontWaist - dartStart.rawX);
-  Point armpit = outerWaist.rotatePoint(dartEnd, HALF_PI, sideLength);
-  
-  landmarks.put(Landmark.OUTER_WAIST, outerWaist);
-  landmarks.put(Landmark.ARMPIT, armpit);
-  
+  rotateLandmark(bustPoint, Landmark.DART_END, dartAngle);
+  rotateLandmark(bustPoint, Landmark.OUTER_WAIST, dartAngle);
+  rotateLandmark(bustPoint, Landmark.ARMPIT, dartAngle);
 }
 
-void calculateAnchorsForShoulderCurve() {
-  Point shoulder = valueOf(Landmark.SHOULDER);
-  Point outerWaist = valueOf(Landmark.OUTER_WAIST);
-  Point armpit = valueOf(Landmark.ARMPIT);
-  Point chestAnchor = valueOf(Landmark.CHEST_ANCHOR);
-  
-  // connecting shoulder to armpit
-  Point lead = armpit.rotatePoint(outerWaist, -HALF_PI, unit);
-  Vector shoulderLine = chestAnchor.to(shoulder).scale(unit);
-  Point follow = shoulder.translate(shoulderLine);
-  
-  
-  landmarks.put(Landmark.ARMPIT_ANCHOR, lead);
-  landmarks.put(Landmark.SHOULDER_ANCHOR, follow);
+void rotateLandmark(Point anchor, Landmark landmark, float angle) {
+  Point toRotate = valueOf(landmark);
+  landmarks.put(landmark, anchor.rotatePoint(toRotate, angle, anchor.getDistanceBetween(toRotate)));  
 }
+
+
 
 void calculateMainBackLandmarks() {
   Point collar = valueOf(Landmark.COLLAR);
@@ -110,7 +96,6 @@ void calculateMainBackLandmarks() {
 void newLeftPoint(Landmark landmark, float x, float y) {
   landmarks.put(landmark, new Point(x, y, Alignment.LEFT));
 }
-
 
 void newRightPoint(Landmark landmark, float x, float y) {
   landmarks.put(landmark, new Point(x, y, Alignment.RIGHT));
