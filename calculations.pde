@@ -33,3 +33,30 @@ det| b1 b2 |
 float getDeterminant(float a1, float a2, float b1, float b2) {
     return (a1 * b2) - (a2 * b1);
 }
+
+class Dart{
+ Point tip, start;
+ 
+ Dart(Point tip, Point start) {
+   this.tip = tip;
+   this.start = start;
+ }
+}
+
+Dart getDart(Point edgeStart, Point edgeEnd, Point dartHinge, float dartOffset, float dartBuffer){
+  Vector edgeDirection = edgeStart.to(edgeEnd);
+  // positive radians == clockwise
+  Vector dartDirection;
+  Point dartTip;
+  if(edgeStart.getAngleBetween(edgeEnd, dartHinge) > 0) {
+    dartTip = dartHinge.translate(edgeDirection.rotate(HALF_PI).scaleTo(dartBuffer * unit));
+    dartDirection = edgeDirection.rotate(HALF_PI + dartOffset);
+  } else {
+    dartTip = dartHinge.translate(edgeDirection.rotate(-HALF_PI).scaleTo(dartBuffer * unit));
+    dartDirection = edgeDirection.rotate(-(HALF_PI + dartOffset));
+  }
+  
+  Point dartStart = getIntersection(dartHinge, edgeStart, dartDirection, edgeDirection);
+  
+  return new Dart(dartTip, dartStart);
+}
