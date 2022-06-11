@@ -21,7 +21,12 @@ float sideLength = 9 * unit;
 
 // back measurements
 float acrossShoulders = 18 * unit / 2;
-float acrossBack = 13.5 * unit;
-float shoulderToBackPit = 7.5 * unit;
+float acrossBack = 13.5 * unit / 2;
+float shoulderToBackPit = 5.5 * unit;
 float centerBack = 14 * unit;
 float fullBack = 16 * unit;
+float backWaist = 13 * unit / 2;
+float backBust = 16 * unit / 2;
+
+float collarToShoulderBlade = 4.5 * unit;
+float shoulderToShoulderBlade = 5 * unit;

@@ -1,20 +1,10 @@
 class Point {
   public float x = 0;
   public float y = 0;
-  public float rawX = 0;
-  public float rawY = 0;
-  public Alignment alignment = Alignment.LEFT;
   
-  public Point(float x, float y, Alignment alignment) {
-    this.x = adjustX(x, alignment);
-    this.y = adjustY(y, alignment);
-    this.rawX = x;
-    this.rawY = y;
-    this.alignment = alignment;
-  }
-  
-  void drawSelf() {
-    point(x, y);
+  public Point(float x, float y) {
+    this.x = x;
+    this.y = y;
   }
   
   float getDistanceBetween(Point other) {
@@ -22,7 +12,7 @@ class Point {
   }
   
   Vector to(Point other) {
-    return new Vector(other.rawX - this.rawX, other.rawY - this.rawY);
+    return new Vector(other.x - this.x, other.y - this.y);
   }
   
   float getAngleBetween(Point p1, Point p2) {
@@ -41,29 +31,7 @@ class Point {
   
   @Override 
   final String toString() {
-    return "(" + rawX / unit + ", " + rawY / unit + ")";
-  }
-  
-  float adjustX(float point, Alignment alignment) {
-    switch(alignment){
-      case LEFT:
-        return point + unit;
-      case RIGHT:
-        return gridWidth - (point + unit);
-      default:
-        return point;
-    }  
-  }
-  
-  float adjustY(float point, Alignment alignment) {
-    switch(alignment){
-      case LEFT:
-        return point + unit;
-      case RIGHT:
-        return point + unit;
-      default:
-        return point;
-    }
+    return "(" + x / unit + ", " + y / unit + ")";
   }
   
   /**
@@ -72,7 +40,7 @@ class Point {
   @param theta: expected to be in radians
   */
   Point translate(Vector direction) {
-    return new Point(this.rawX + direction.x, this.rawY + direction.y, this.alignment);
+    return new Point(this.x + direction.x, this.y + direction.y);
   }
    
   /**
@@ -84,8 +52,8 @@ class Point {
   @param theta angle from initial vector, in radians
   */
   Point rotatePoint(Vector ray, float theta, float distance) {
-    Vector transform = ray.rotate(theta).scale(distance);
-    return new Point(this.rawX + transform.x, this.rawY+ transform.y, this.alignment);
+    Vector transform = ray.rotate(theta).scaleTo(distance);
+    return new Point(this.x + transform.x, this.y+ transform.y);
   }
   /**
   known: angle from initial vector, total distance from vector
@@ -116,11 +84,6 @@ class Point {
   */
   Point getPointOnLine(Vector ray, float theta) {
     float distance = ray.getMagnitude();
-    return new Point(this.rawX + distance * tan(theta), this.rawY + ray.y, this.alignment);
+    return new Point(this.x + distance * tan(theta), this.y + ray.y);
   }
-}
-
-enum Alignment{
-  LEFT, 
-  RIGHT
 }

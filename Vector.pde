@@ -16,12 +16,16 @@ class Vector {
   
   @Override 
   String toString() {
-    return "<" + x + ", " + y + ">";
+    return "<" + x / unit + ", " + y / unit + ">";
   }
   
-  Vector scale(float newMagnitude) {
+  Vector scaleTo(float newMagnitude) {
     float currentMagnitude = getMagnitude();
     return new Vector(x * newMagnitude/currentMagnitude, y * newMagnitude/currentMagnitude);
+  }
+  
+  Vector scaleBy(float scalar) {
+    return new Vector(x * scalar, y * scalar);
   }
   
   Vector rotate(float theta) {
